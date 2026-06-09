@@ -1,0 +1,99 @@
+<div class="auth-shell">
+  <div class="auth-side">
+    <div class="auth-brand">
+      <span class="auth-brand-mark">L</span>
+      <span>LogiTrack</span>
+    </div>
+    <h1>Join the network.</h1>
+    <p>Create your account and request a role. An administrator will review and approve your registration.</p>
+    <ul class="auth-features">
+      <li>Customer · Place and track shipments</li>
+      <li>Driver · Accept rides and complete deliveries</li>
+      <li>Dispatcher · Route and dispatch shipments</li>
+      <li>Fleet Manager · Maintain vehicle fleet</li>
+    </ul>
+  </div>
+
+  <div class="auth-form-wrap">
+    <div class="auth-card">
+      <h2 class="auth-title">Create account</h2>
+      <p class="auth-subtitle">Get an OTP, then register. Admin approval required.</p>
+
+      @if (error()) {
+        <div class="alert alert-error">{{ error() }}</div>
+      }
+      @if (success()) {
+        <div class="alert alert-success">{{ success() }}</div>
+      }
+      @if (otpMessage()) {
+        <div class="alert alert-info">{{ otpMessage() }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Full name</label>
+            <input class="form-control" formControlName="name" placeholder="Jane Doe"
+              [class.error]="form.controls.name.touched && form.controls.name.invalid"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone (10 digits)</label>
+            <input class="form-control" formControlName="phoneNumber" placeholder="9876543210"
+              [class.error]="form.controls.phoneNumber.touched && form.controls.phoneNumber.invalid"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <div class="input-with-action">
+            <input class="form-control" formControlName="email" placeholder="you@example.com"
+              [class.error]="form.controls.email.touched && form.controls.email.invalid"/>
+            <button type="button" class="btn btn-secondary btn-sm" (click)="requestOtp()" [disabled]="otpLoading()">
+              @if (!otpLoading()) {
+                <span>Send OTP</span>
+              }
+              @if (otpLoading()) {
+                <span class="spinner" style="width:14px;height:14px;border-width:2px;"></span>
+              }
+            </button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" formControlName="password" placeholder="At least 6 chars"
+              [class.error]="form.controls.password.touched && form.controls.password.invalid"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">OTP code</label>
+            <input class="form-control" formControlName="otpCode" placeholder="6-digit code"
+              [class.error]="form.controls.otpCode.touched && form.controls.otpCode.invalid"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Requested role</label>
+          <select class="form-control" formControlName="requestedRole">
+            @for (r of selectableRoles; track r) {
+              <option [value]="r">{{ r }}</option>
+            }
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary auth-submit" [disabled]="loading()">
+          @if (!loading()) {
+            <span>Create account</span>
+          }
+          @if (loading()) {
+            <span class="spinner"></span>
+          }
+        </button>
+      </form>
+
+      <p class="auth-footer">
+        Already have an account? <a routerLink="/login">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>

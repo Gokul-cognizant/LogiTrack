@@ -1,0 +1,61 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Audit Logs</h1>
+      <p class="page-subtitle">System activity, newest first.</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-error">
+      {{ error() }}
+    </div>
+  }
+
+  <div class="card">
+
+    @if (loading()) {
+      <div class="spinner-center">
+        <span class="spinner spinner-lg"></span>
+      </div>
+    }
+
+    @if (!loading() && logs().length === 0) {
+      <div class="empty-state">
+        <h4>No audit logs</h4>
+      </div>
+    }
+
+    @if (!loading() && logs().length > 0) {
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>User</th>
+              <th>Action</th>
+              <th>Details</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (l of logs(); track l) {
+              <tr>
+                <td>#{{ l.auditId }}</td>
+                <td>{{ l.userId }}</td>
+                <td>
+                  <span class="badge badge-info">
+                    {{ l.action }}
+                  </span>
+                </td>
+                <td>{{ l.details }}</td>
+                <td>{{ l.timestamp | date:'medium' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+  </div>
+</div>

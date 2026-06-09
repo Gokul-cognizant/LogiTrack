@@ -1,0 +1,77 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Pending Users</h1>
+      <p class="page-subtitle">Approve or reject account requests.</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-error">
+      {{ error() }}
+    </div>
+  }
+
+  @if (message()) {
+    <div class="alert alert-success">
+      {{ message() }}
+    </div>
+  }
+
+  <div class="card">
+
+    @if (loading()) {
+      <div class="spinner-center">
+        <span class="spinner spinner-lg"></span>
+      </div>
+    }
+
+    @if (!loading() && users().length === 0) {
+      <div class="empty-state">
+        <h4>No pending users</h4>
+        <p>All requests have been processed.</p>
+      </div>
+    }
+
+    @if (!loading() && users().length > 0) {
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Requested Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of users(); track u) {
+              <tr>
+                <td>#{{ u.userId }}</td>
+                <td>{{ u.name }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.phoneNumber }}</td>
+                <td>
+                  <span class="badge badge-info">{{ u.role }}</span>
+                </td>
+                <td>
+                  <button class="btn btn-success btn-sm"
+                    (click)="approve(u.userId)">
+                    Approve
+                  </button>
+                  <button class="btn btn-danger btn-sm"
+                    (click)="reject(u.userId)">
+                    Reject
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+  </div>
+</div>

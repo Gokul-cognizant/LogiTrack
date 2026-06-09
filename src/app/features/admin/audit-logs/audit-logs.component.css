@@ -1,0 +1,16 @@
+/* Optional minimal styling (separated from TS as requested) */
+
+.empty-state {
+  padding: 20px;
+  text-align: center;
+}
+
+.empty-state h4 {
+  margin: 0;
+}
+
+.spinner-center {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}

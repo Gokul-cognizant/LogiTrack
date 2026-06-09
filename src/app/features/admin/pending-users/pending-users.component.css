@@ -1,0 +1,13 @@
+.empty-state {
+  padding: 20px;
+}
+
+.spinner-center {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.btn-sm {
+  margin-right: 6px;
+}

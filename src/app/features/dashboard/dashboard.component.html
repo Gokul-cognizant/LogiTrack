@@ -1,0 +1,161 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Welcome, {{ user()?.email }}</h1>
+      <p class="page-subtitle">
+        Signed in as {{ roleLabel() }}
+        @if (lastUpdated()) {
+          <span class="page-stale"> · Updated {{ lastUpdated() | date:'shortTime' }}</span>
+        }
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn-refresh" (click)="refresh()" [disabled]="refreshing()" title="Refresh metrics">
+        <span class="btn-refresh-icon" [class.spinning]="refreshing()">↻</span>
+        <span>{{ refreshing() ? 'Refreshing…' : 'Refresh' }}</span>
+      </button>
+      @if (unreadCount() > 0) {
+        <a routerLink="/notifications" class="notif-pill">
+          ✉ {{ unreadCount() }} unread
+        </a>
+      }
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  <!-- ADMIN -->
+  @if (role() === 'ADMIN') {
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-value">{{ totalUsers() }}</div><div class="stat-meta">All registered accounts</div></div>
+      <div class="stat-card"><div class="stat-label">Pending Approvals</div><div class="stat-value">{{ pendingApprovals() }}</div><div class="stat-meta">Awaiting your review</div></div>
+      <div class="stat-card"><div class="stat-label">Audit Logs</div><div class="stat-value">{{ auditLogCount() }}</div><div class="stat-meta">System events recorded</div></div>
+    </div>
+  <div class="quick-actions">
+    <a routerLink="/admin/pending" class="action-card"><div class="action-icon">⏲</div><div><div class="action-title">Review pending users</div><div class="action-desc">Approve or reject incoming registration requests.</div></div></a>
+    <a routerLink="/admin/users" class="action-card"><div class="action-icon">◐</div><div><div class="action-title">Manage all users</div><div class="action-desc">Deactivate or reactivate accounts.</div></div></a>
+    <a routerLink="/admin/audit" class="action-card"><div class="action-icon">✔</div><div><div class="action-title">Browse audit logs</div><div class="action-desc">Every system event, newest first.</div></div></a>
+  </div>
+}
+
+<!-- CUSTOMER -->
+@if (role() === 'CUSTOMER') {
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">My Orders</div><div class="stat-value">{{ myOrders() }}</div><div class="stat-meta">Total placed</div></div>
+    <div class="stat-card"><div class="stat-label">In Transit</div><div class="stat-value">{{ myOrdersInTransit() }}</div><div class="stat-meta">Currently on the way</div></div>
+    <div class="stat-card"><div class="stat-label">Delivered</div><div class="stat-value">{{ myOrdersDelivered() }}</div><div class="stat-meta">Successfully completed</div></div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-title">Orders by status</div>
+      <app-donut-chart [slices]="ordersByStatus()" caption="orders"></app-donut-chart>
+    </div>
+    <div class="kpi-card kpi-card-wide">
+      <div class="kpi-title">Top destinations</div>
+      <app-bar-chart [items]="ordersByDestination()"></app-bar-chart>
+    </div>
+  </div>
+  <div class="quick-actions">
+    <a routerLink="/customer/new" class="action-card"><div class="action-icon">✚</div><div><div class="action-title">Place a new shipment</div><div class="action-desc">Origin, destination, weight, receiver — done in 30 seconds.</div></div></a>
+    <a routerLink="/customer/orders" class="action-card"><div class="action-icon">▤</div><div><div class="action-title">Track my orders</div><div class="action-desc">See live status of every shipment you placed.</div></div></a>
+  </div>
+}
+
+<!-- DISPATCHER -->
+@if (role() === 'DISPATCHER') {
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Shipments</div><div class="stat-value">{{ shipmentTotal() }}</div><div class="stat-meta">All shipments in the system</div></div>
+    <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value">{{ shipmentsPending() }}</div><div class="stat-meta">Need to be dispatched</div></div>
+    <div class="stat-card"><div class="stat-label">In Transit</div><div class="stat-value">{{ shipmentsInTransit() }}</div><div class="stat-meta">Drivers en route</div></div>
+    <div class="stat-card"><div class="stat-label">Active Routes</div><div class="stat-value">{{ routesActive() }}</div><div class="stat-meta">Ready for dispatching</div></div>
+    <div class="stat-card"><div class="stat-label">Active Schedules</div><div class="stat-value">{{ schedulesActive() }}</div><div class="stat-meta">Scheduled or in transit</div></div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-title">Shipments by status</div>
+      <app-donut-chart [slices]="shipmentsByStatus()" caption="shipments"></app-donut-chart>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">Routes by status</div>
+      <app-donut-chart [slices]="routesByStatus()" caption="routes"></app-donut-chart>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">Schedules by status</div>
+      <app-donut-chart [slices]="schedulesByStatus()" caption="schedules"></app-donut-chart>
+    </div>
+  </div>
+  <div class="quick-actions">
+    <a routerLink="/dispatcher/shipments" class="action-card"><div class="action-icon">▤</div><div><div class="action-title">Browse shipments</div><div class="action-desc">Pick the next one to dispatch.</div></div></a>
+    <a routerLink="/dispatcher/dispatch" class="action-card"><div class="action-icon">➤</div><div><div class="action-title">Dispatch shipment</div><div class="action-desc">Assign a driver, vehicle, route in one step.</div></div></a>
+    <a routerLink="/dispatcher/routes" class="action-card"><div class="action-icon">↯</div><div><div class="action-title">Manage routes</div><div class="action-desc">Add and toggle logistic routes.</div></div></a>
+  </div>
+}
+
+<!-- FLEET_MANAGER -->
+@if (role() === 'FLEET_MANAGER') {
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Total Vehicles</div><div class="stat-value">{{ vehicleTotal() }}</div><div class="stat-meta">Your full fleet</div></div>
+    <div class="stat-card"><div class="stat-label">Available</div><div class="stat-value">{{ vehiclesAvailable() }}</div><div class="stat-meta">Ready for dispatch</div></div>
+    <div class="stat-card"><div class="stat-label">In Maintenance</div><div class="stat-value">{{ vehiclesInMaintenance() }}</div><div class="stat-meta">Locked from dispatch</div></div>
+    <div class="stat-card"><div class="stat-label">Open Maintenance</div><div class="stat-value">{{ pendingMaintenance() }}</div><div class="stat-meta">Pending or in-progress tickets</div></div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-title">Vehicles by status</div>
+      <app-donut-chart [slices]="vehiclesByStatus()" caption="vehicles"></app-donut-chart>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">Inspections</div>
+      <app-donut-chart [slices]="inspectionsByStatus()" caption="results"></app-donut-chart>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">Maintenance</div>
+      <app-donut-chart [slices]="maintenanceByStatus()" caption="tickets"></app-donut-chart>
+    </div>
+    <div class="kpi-card kpi-card-wide">
+      <div class="kpi-title">Vehicles by type</div>
+      <app-bar-chart [items]="vehiclesByType()"></app-bar-chart>
+    </div>
+  </div>
+  <div class="quick-actions">
+    <a routerLink="/fleet/vehicles" class="action-card"><div class="action-icon">◭</div><div><div class="action-title">Manage vehicles</div><div class="action-desc">Add new vehicles and view fleet status.</div></div></a>
+    <a routerLink="/fleet/inspections" class="action-card"><div class="action-icon">⚙</div><div><div class="action-title">Record inspections</div><div class="action-desc">A FAILED inspection auto-creates a maintenance ticket.</div></div></a>
+    <a routerLink="/fleet/maintenance" class="action-card"><div class="action-icon">✦</div><div><div class="action-title">Maintenance tickets</div><div class="action-desc">Start & complete maintenance to lock/release vehicles.</div></div></a>
+  </div>
+}
+
+<!-- DRIVER -->
+@if (role() === 'DRIVER') {
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Upcoming Rides</div><div class="stat-value">{{ ridesScheduled() }}</div><div class="stat-meta">Scheduled, not yet started</div></div>
+    <div class="stat-card"><div class="stat-label">In Transit</div><div class="stat-value">{{ ridesInTransit() }}</div><div class="stat-meta">Trips currently active</div></div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-title">Rides by status</div>
+      <app-donut-chart [slices]="ridesByStatus()" caption="rides"></app-donut-chart>
+    </div>
+  </div>
+  <div class="quick-actions">
+    <a routerLink="/driver/rides" class="action-card"><div class="action-icon">⛟</div><div><div class="action-title">View my rides</div><div class="action-desc">Start trips and complete deliveries.</div></div></a>
+  </div>
+}
+
+<!-- AUDITOR -->
+@if (role() === 'AUDITOR') {
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Audit Logs</div><div class="stat-value">{{ auditTotal() }}</div><div class="stat-meta">System events recorded</div></div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi-card kpi-card-wide">
+      <div class="kpi-title">Top actions</div>
+      <app-bar-chart [items]="auditByAction()"></app-bar-chart>
+    </div>
+  </div>
+  <div class="quick-actions">
+    <a routerLink="/admin/audit" class="action-card"><div class="action-icon">✔</div><div><div class="action-title">Browse audit logs</div><div class="action-desc">Every action in the system, newest first.</div></div></a>
+  </div>
+}
+</div>

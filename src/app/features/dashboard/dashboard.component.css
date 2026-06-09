@@ -1,0 +1,92 @@
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+.action-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.action-card:hover {
+  transform: translateY(-2px);
+  border-color: #c7d2fe;
+  box-shadow: var(--shadow);
+  text-decoration: none;
+}
+.action-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.action-title { font-weight: 600; font-size: 14.5px; }
+.action-desc { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+.notif-pill {
+  background: var(--warning-soft);
+  color: var(--warning);
+  border: 1px solid #fbbf24;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.notif-pill:hover { background: #fde68a; text-decoration: none; }
+
+.page-header-actions { display: flex; align-items: center; gap: 10px; }
+.page-stale { color: #94a3b8; font-size: 12px; margin-left: 6px; }
+.btn-refresh {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #fff; color: #334155;
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 14px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+}
+.btn-refresh:hover:not(:disabled) { background: #f8fafc; border-color: #cbd5e1; }
+.btn-refresh:disabled { opacity: .6; cursor: not-allowed; }
+.btn-refresh-icon { font-size: 14px; display: inline-block; transition: transform .3s ease; }
+.btn-refresh-icon.spinning { animation: spinr 1s linear infinite; }
+@keyframes spinr { to { transform: rotate(360deg); } }
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 18px 0;
+}
+.kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+}
+.kpi-card-wide { grid-column: span 2; }
+@media (max-width: 900px) { .kpi-card-wide { grid-column: span 1; } }
+.kpi-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}

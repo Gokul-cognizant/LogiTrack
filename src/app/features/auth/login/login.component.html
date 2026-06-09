@@ -1,0 +1,69 @@
+<div class="auth-shell">
+  <div class="auth-side">
+    <div class="auth-brand">
+      <span class="auth-brand-mark">L</span>
+      <span>LogiTrack</span>
+    </div>
+    <h1>Freight & Fleet management, simplified.</h1>
+    <p>Dispatch shipments, track vehicles, and manage your logistics network in one professional console.</p>
+    <ul class="auth-features">
+      <li>Real-time shipment dispatching</li>
+      <li>Driver assignment & delivery verification</li>
+      <li>Fleet inspection & maintenance</li>
+      <li>End-to-end audit logging</li>
+    </ul>
+  </div>
+
+  <div class="auth-form-wrap">
+    <div class="auth-card">
+      <h2 class="auth-title">Welcome back</h2>
+      <p class="auth-subtitle">Sign in to continue to your dashboard.</p>
+
+      @if (error()) {
+        <div class="alert alert-error">{{ error() }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" formControlName="email" placeholder="you@example.com"
+            [class.error]="form.controls.email.touched && form.controls.email.invalid"/>
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            <div class="form-error">
+              Enter a valid email.
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" formControlName="password" placeholder="••••••••"
+            [class.error]="form.controls.password.touched && form.controls.password.invalid"/>
+          @if (form.controls.password.touched && form.controls.password.invalid) {
+            <div class="form-error">
+              Password is required (min 6 chars).
+            </div>
+          }
+        </div>
+
+        <button type="submit" class="btn btn-primary auth-submit" [disabled]="loading()">
+          @if (!loading()) {
+            <span>Sign in</span>
+          }
+          @if (loading()) {
+            <span class="spinner"></span>
+          }
+        </button>
+      </form>
+
+      <p class="auth-footer" style="display:flex; flex-direction:column; gap:6px;">
+        <span>New here? <a routerLink="/register">Create an account</a></span>
+        <span>
+          <a routerLink="/forgot-password">Forgot password?</a>
+          &nbsp;·&nbsp;
+          <a routerLink="/forgot-username">Forgot email?</a>
+        </span>
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,130 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">All Users</h1>
+      <p class="page-subtitle">Every registered account.</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+  @if (success()) {
+    <div class="alert alert-success">{{ success() }}</div>
+  }
+
+  <div class="card">
+    <div class="card-header header-row">
+      <h3 class="card-title">
+        {{ filterRole() ? filterRole() + ' users' : 'All users' }}
+        ({{ users().length }})
+      </h3>
+
+      <div class="filter-box">
+        <label class="form-label">Filter by role:</label>
+        <select class="form-control"
+          [value]="filterRole() || ''"
+          (change)="onFilter($event)">
+          <option value="">All roles</option>
+          @for (r of allRoles; track r) {
+            <option [value]="r">{{ r }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="spinner-center">
+        <span class="spinner spinner-lg"></span>
+      </div>
+    }
+
+    @if (!loading()) {
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th><th>Name</th><th>Email</th>
+              <th>Phone</th><th>Role</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of users(); track u) {
+              <tr>
+                <td>#{{ u.userId }}</td>
+                <td>{{ u.name }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.phoneNumber }}</td>
+                <td><span class="badge badge-info">{{ u.role }}</span></td>
+                <td><span class="badge" [ngClass]="badge(u.status)">{{ u.status }}</span></td>
+                <td>
+                  @if (u.status === 'ACTIVE' && u.role !== 'ADMIN') {
+                    <button
+                      class="btn btn-secondary btn-sm"
+                    (click)="openRole(u)">Change role</button>
+                  }
+                  @if (u.status === 'ACTIVE' && u.role !== 'ADMIN') {
+                    <button
+                      class="btn btn-danger btn-sm"
+                    (click)="deactivate(u)">Deactivate</button>
+                  }
+                  @if (u.status === 'INACTIVE') {
+                    <button
+                      class="btn btn-success btn-sm"
+                    (click)="reactivate(u)">Reactivate</button>
+                  }
+                  @if (u.status === 'PENDING') {
+                    <span class="text-muted">
+                      Pending approval
+                    </span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <!-- Modal -->
+  @if (roleTarget()) {
+    <div class="modal-backdrop" (click)="cancelRole()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <h3>Change role for {{ roleTarget()?.email }}</h3>
+        <p class="card-subtitle">
+          Current: <strong>{{ roleTarget()?.role }}</strong>
+        </p>
+        <form [formGroup]="roleForm" (ngSubmit)="confirmRole()">
+          <div class="form-group">
+            <label class="form-label">New role</label>
+            <select class="form-control" formControlName="newRole">
+              @for (r of selectableRoles; track r) {
+                <option [value]="r">{{ r }}</option>
+              }
+            </select>
+            <div class="form-error hint">
+              Backend rule: you can only move TO/FROM CUSTOMER.
+            </div>
+          </div>
+          @if (roleForm.controls.newRole.value === 'DRIVER') {
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">License number</label>
+                <input class="form-control" formControlName="licenseNumber"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Contact info</label>
+                <input class="form-control" formControlName="contactInfo"/>
+              </div>
+            </div>
+          }
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary" [disabled]="saving()">Apply</button>
+            <button type="button" class="btn btn-secondary" (click)="cancelRole()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>
